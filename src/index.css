@@ -1,0 +1,78 @@
+:root {
+  font-family: "Poppins", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+
+  .MuiModal-root .MuiBox-root {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 4rem;
+    outline: none;
+    border-radius: 15px;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    @media (max-width: 800px) {
+      width: 70%;
+      padding: 2rem;
+    }
+
+    @media (max-width: 350px) {
+      width: 85%;
+      padding: 1rem;
+    }
+  }
+}
+
+a {
+  color: #29abe3;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin: 0;
+}
+
+@media (max-width: 730px) {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #3c3c3b;
+    background-color: #ffffff;
+  }
+}
