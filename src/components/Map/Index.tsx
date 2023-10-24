@@ -3,7 +3,11 @@ import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import axios from "axios";
 import { MapContainer, Address } from "./styles";
 
-export function Map() {
+interface MapProps {
+  onAddressChange: (address: string) => void;
+}
+
+export function Map({ onAddressChange }: MapProps) {
   const [currentLocation, setCurrentLocation] = useState({
     lat: 0,
     lng: 0,
@@ -24,8 +28,8 @@ export function Map() {
             `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyD1Vl5KStAedRHH92veIfmeLSVJWPd_QuY`
           );
           if (response.data.results.length > 0) {
-            console.log(response.data.results);
             setCurrentAddress(response.data.results[0].formatted_address);
+            onAddressChange(response.data.results[0].formatted_address);
           }
         } catch (error) {
           console.error("Error fetching address:", error);

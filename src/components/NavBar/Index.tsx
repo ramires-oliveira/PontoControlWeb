@@ -5,10 +5,13 @@ import { FiLogOut } from "react-icons/fi";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { Link, NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { logout } from "../../auth/authService";
+import { useNavigate } from "react-router-dom";
 
 export function NavBar() {
   const [toggleMenu, setToggleMenu] = useState(false);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  const navigate = useNavigate();
 
   const toggleNav = () => {
     setToggleMenu(!toggleMenu);
@@ -26,12 +29,17 @@ export function NavBar() {
     };
   }, []);
 
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <Navbar>
       <Link to="/home" className="link">
         <img src={Logo1} alt="Logo" id="logo" />
       </Link>
-      <FiLogOut className="logout" />
+      <FiLogOut className="logout" onClick={handleLogout} />
       {toggleMenu && screenWidth < 600 && (
         <NavbarMobile>
           <RxHamburgerMenu onClick={toggleNav} />

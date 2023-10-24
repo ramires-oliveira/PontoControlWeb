@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import "./App.css";
 import Login from "./pages/Login/Login";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -9,6 +14,7 @@ import NewEmployee from "./pages/NewEmployee/NewEmployee";
 import { SidebarProvider } from "./reactContext/SidebarContext";
 import DotMirror from "./pages/DotMirror/DotMirror";
 import ResetePassword from "./pages/ResetePassword/ResetePassword";
+import { isAuthenticated } from "./auth/authService";
 
 const theme = createTheme({
   palette: {
@@ -24,14 +30,37 @@ function App() {
       <SidebarProvider>
         <Router>
           <Routes>
-            <Route path="/" element={<Home />}></Route>
+            <Route path="/" element={<Login />}></Route>
             <Route path="/login" element={<Login />}></Route>
             <Route path="/resetePassword" element={<ResetePassword />}></Route>
-            <Route path="/home" element={<Home />}></Route>
-            <Route path="/perfil" element={<Perfil />}></Route>
-            <Route path="/markTime" element={<MarkTime />}></Route>
-            <Route path="/dotMirror" element={<DotMirror />}></Route>
-            <Route path="/newEmployee" element={<NewEmployee />}></Route>
+            <Route
+              path="/home"
+              element={isAuthenticated() ? <Home /> : <Navigate to="/login" />}
+            ></Route>
+            <Route
+              path="/perfil"
+              element={
+                isAuthenticated() ? <Perfil /> : <Navigate to="/login" />
+              }
+            ></Route>
+            <Route
+              path="/markTime"
+              element={
+                isAuthenticated() ? <MarkTime /> : <Navigate to="/login" />
+              }
+            ></Route>
+            <Route
+              path="/dotMirror"
+              element={
+                isAuthenticated() ? <DotMirror /> : <Navigate to="/login" />
+              }
+            ></Route>
+            <Route
+              path="/newEmployee"
+              element={
+                isAuthenticated() ? <NewEmployee /> : <Navigate to="/login" />
+              }
+            ></Route>
           </Routes>
         </Router>
       </SidebarProvider>

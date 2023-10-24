@@ -30,6 +30,8 @@ export const ContentHeader = styled.div<SidebarProps>`
     position: relative;
 
     .initial {
+      min-width: 2rem;
+      justify-content: center;
       height: fit-content;
       background-color: #29abe3;
       color: #fff;
@@ -128,6 +130,10 @@ export const ContentRoutes = styled.div<SidebarProps>`
     opacity: 0.5;
     color: #fff;
     border-radius: 10px;
+
+    span {
+      color: #fff;
+    }
   }
 
   .active {
@@ -135,7 +141,7 @@ export const ContentRoutes = styled.div<SidebarProps>`
     color: #fff;
     border-radius: 10px;
 
-    a {
+    span {
       color: #fff;
     }
   }

@@ -1,3 +1,12 @@
+import React, { useState } from "react";
+import axios from "axios";
+import { TextField } from "@mui/material";
+import Swal from "sweetalert2";
+import { getAuthToken } from "../../auth/authService";
+import NavBar from "../../components/NavBar/Index";
+import SideBar from "../../components/SideBar/Index";
+import Card from "../../components/Card/Index";
+import Button from "../../components/Button/Index";
 import {
   Container,
   ContentButton,
@@ -5,13 +14,69 @@ import {
   ContentForm,
   ContentHeader,
 } from "../Profile/styles";
-import NavBar from "../../components/NavBar/Index";
-import SideBar from "../../components/SideBar/Index";
-import Card from "../../components/Card/Index";
-import { TextField } from "@mui/material";
-import Button from "../../components/Button/Index";
+
+const initialFormData = {
+  firstName: "",
+  lastName: "",
+  document: "",
+  email: "",
+  password: "",
+  typeUser: "",
+  position: "",
+};
 
 const NewEmployee = () => {
+  const [formData, setFormData] = useState(initialFormData);
+  const apiUrl = "https://localhost:7083/User";
+  const token = getAuthToken();
+
+  const resetForm = () => {
+    setFormData(initialFormData);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [id]: value,
+    }));
+  };
+
+  const handleNewEmployeeClick = async () => {
+    const updatedFormData = {
+      ...formData,
+      password: "123456",
+    };
+
+    await axios
+      .post(apiUrl, updatedFormData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(() => {
+        resetForm();
+
+        Swal.fire({
+          title: "Cadastrado Realizado !",
+          icon: "success",
+          allowOutsideClick: false,
+          cancelButtonColor: "#29abe3",
+          confirmButtonColor: "#29abe3",
+        });
+      })
+      .catch(() => {
+        Swal.fire({
+          title: "Erro !",
+          text: "Entre em contato com o suporte.",
+          icon: "error",
+          allowOutsideClick: false,
+          cancelButtonColor: "#29abe3",
+          confirmButtonColor: "#29abe3",
+        });
+      });
+  };
+
   return (
     <>
       <NavBar />
@@ -23,15 +88,48 @@ const NewEmployee = () => {
               <h1>Novo Funcionário</h1>
             </ContentHeader>
             <ContentForm>
-              <TextField id="Name" label="Nome" variant="outlined" />
-              <TextField id="LastName" label="Sobrenome" variant="outlined" />
-              <TextField id="Document" label="Documento" variant="outlined" />
-              <TextField id="Email" label="Email" variant="outlined" />
-              <TextField id="Company" label="Empresa" variant="outlined" />
-              <TextField id="Office" label="Cargo" variant="outlined" />
+              <TextField
+                id="firstName"
+                label="Nome"
+                variant="outlined"
+                value={formData.firstName}
+                onChange={handleChange}
+              />
+              <TextField
+                id="lastName"
+                label="Sobrenome"
+                variant="outlined"
+                value={formData.lastName}
+                onChange={handleChange}
+              />
+              <TextField
+                id="document"
+                label="Documento"
+                variant="outlined"
+                value={formData.document}
+                onChange={handleChange}
+              />
+              <TextField
+                id="email"
+                label="Email"
+                variant="outlined"
+                value={formData.email}
+                onChange={handleChange}
+              />
+              <TextField
+                id="position"
+                label="Cargo"
+                variant="outlined"
+                value={formData.position}
+                onChange={handleChange}
+              />
             </ContentForm>
             <ContentButton>
-              <Button color="#fff" text="CADASTRAR" />
+              <Button
+                color="#fff"
+                text="CADASTRAR"
+                onClick={handleNewEmployeeClick}
+              />
             </ContentButton>
           </Content>
         </Card>

@@ -12,17 +12,56 @@ import Clock from "../../components/Clock/Index";
 import Button from "../../components/Button/Index";
 import Map from "../../components/Map/Index";
 import Swal from "sweetalert2";
+import axios from "axios";
+import { useState } from "react";
+import { getAuthToken } from "../../auth/authService";
+
+interface MarkTimeData {
+  hour: Date;
+  address: string;
+}
 
 const MarkTime = () => {
-  const showSweetAlert = () => {
-    Swal.fire({
-      title: "Marcação Realizada !",
-      text: "Consulte seu espelho de ponto.",
-      icon: "success",
-      allowOutsideClick: false,
-      cancelButtonColor: "#29abe3",
-      confirmButtonColor: "#29abe3",
-    });
+  const [currentAddress, setCurrentAddress] = useState("");
+  const apiUrl = "https://localhost:7083/Marking";
+  const token = getAuthToken();
+
+  const handleAddressChange = (newAddress: string) => {
+    setCurrentAddress(newAddress);
+  };
+
+  const handleMarkTimeClick = async () => {
+    const formData: MarkTimeData = {
+      hour: new Date(),
+      address: currentAddress,
+    };
+
+    await axios
+      .post(apiUrl, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(() => {
+        Swal.fire({
+          title: "Marcação Realizada !",
+          text: "Consulte seu espelho de ponto.",
+          icon: "success",
+          allowOutsideClick: false,
+          cancelButtonColor: "#29abe3",
+          confirmButtonColor: "#29abe3",
+        });
+      })
+      .catch(() => {
+        Swal.fire({
+          title: "Erro !",
+          text: "Entre em contato com o suporte.",
+          icon: "error",
+          allowOutsideClick: false,
+          cancelButtonColor: "#29abe3",
+          confirmButtonColor: "#29abe3",
+        });
+      });
   };
 
   return (
@@ -36,7 +75,7 @@ const MarkTime = () => {
               <h1>Incluir Ponto</h1>
             </ContentHeader>
             <ContentMap>
-              <Map />
+              <Map onAddressChange={handleAddressChange} />
             </ContentMap>
             <Clock />
             <div>
@@ -46,7 +85,7 @@ const MarkTime = () => {
               <Button
                 color="#fff"
                 text="Marcar Ponto"
-                onClick={showSweetAlert}
+                onClick={handleMarkTimeClick}
               />
             </ContentButton>
           </Content>

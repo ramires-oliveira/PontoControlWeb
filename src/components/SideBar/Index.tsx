@@ -13,19 +13,26 @@ import { Link, NavLink } from "react-router-dom";
 import { useSidebar } from "../../reactContext/SidebarContext";
 
 export function SideBar() {
-  const { isOpen, toggleSidebar } = useSidebar();
+  const { isOpen, toggleSidebar, user } = useSidebar();
 
   return (
     <SidebarContainer isOpen={isOpen}>
       <ContentHeader isOpen={isOpen}>
         <Link to="/perfil">
           <div className="initial">
-            <span>RO</span>
+            <span>
+              {user?.name
+                ?.split(" ")
+                .map((parte) => parte.charAt(0))
+                .slice(0, 2)
+                .join("")
+                .toLocaleUpperCase()}
+            </span>
           </div>
 
           <div className="nameProfession">
-            <span className="name">Ramires</span>
-            <span className="profession">Desenvolvedor Full-Stack</span>
+            <span className="name">{user?.name}</span>
+            <span className="profession">{user?.position}</span>
           </div>
         </Link>
       </ContentHeader>

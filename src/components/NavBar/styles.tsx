@@ -17,6 +17,10 @@ export const Navbar = styled.div`
     }
   }
 
+  .logout {
+    color: #3c3c3b;
+  }
+
   svg {
     cursor: pointer;
     font-size: 1.5rem;

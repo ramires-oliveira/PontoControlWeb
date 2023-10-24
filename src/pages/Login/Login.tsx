@@ -3,8 +3,61 @@ import Logo1 from "../../assets/images/Logo_1.png";
 import Logo3 from "../../assets/images/Logo_3.png";
 import Button from "../../components/Button/Index";
 import { Container, ContentImg, ContentForm, Form } from "./styles";
+import axios from "axios";
+import { useState } from "react";
+import { setAuthToken } from "../../auth/authService";
+import { useNavigate } from "react-router-dom";
+import { useSidebar } from "../../reactContext/SidebarContext";
+import Swal from "sweetalert2";
+
+interface LoginData {
+  email: string;
+  password: string;
+}
 
 const Login = () => {
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState<LoginData>({
+    email: "",
+    password: "",
+  });
+
+  const { setUser } = useSidebar();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+
+    setFormData({
+      ...formData,
+      [id]: value,
+    });
+  };
+
+  const handleLoginClick = async () => {
+    const apiUrl = "https://localhost:7083/Login";
+
+    await axios
+      .post(apiUrl, formData)
+      .then(async (response) => {
+        const user = response.data;
+        setUser(user);
+        setAuthToken(user.token);
+
+        navigate("/home");
+      })
+      .catch(() => {
+        Swal.fire({
+          title: "Erro !",
+          text: "Entre em contato com o suporte.",
+          icon: "error",
+          allowOutsideClick: false,
+          cancelButtonColor: "#29abe3",
+          confirmButtonColor: "#29abe3",
+        });
+      });
+  };
+
   return (
     <Container>
       <ContentImg>
@@ -14,10 +67,22 @@ const Login = () => {
       <ContentForm>
         <Form>
           <h1>Login</h1>
-          <TextField id="Login" label="Login" variant="outlined" />
-          <TextField id="Password" label="Senha" variant="outlined" />
+          <TextField
+            id="email"
+            label="Login"
+            variant="outlined"
+            value={formData.email}
+            onChange={handleChange}
+          />
+          <TextField
+            id="password"
+            label="Senha"
+            variant="outlined"
+            value={formData.password}
+            onChange={handleChange}
+          />
           <div>
-            <Button color="#3c3c3b" text="ENTRAR" />
+            <Button color="#3c3c3b" text="ENTRAR" onClick={handleLoginClick} />
             <span>
               Esqueceu sua senha ? <a href="/resetePassword">Clique aqui</a>
             </span>
