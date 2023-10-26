@@ -29,7 +29,6 @@ const initialFormData = {
 const Perfil = () => {
   const { user } = useSidebar();
   const [formData, setFormData] = useState(initialFormData);
-  const apiUrl = "https://localhost:7083/User/update-password";
   const token = getAuthToken();
 
   const resetForm = () => {
@@ -47,11 +46,15 @@ const Perfil = () => {
 
   const handleResetePasswordClick = () => {
     axios
-      .put(apiUrl, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      .put(
+        `${import.meta.env.VITE_APP_API_URL}/User/update-password`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       .then(() => {
         resetForm();
 
@@ -63,15 +66,31 @@ const Perfil = () => {
           confirmButtonColor: "#29abe3",
         });
       })
-      .catch(() => {
-        Swal.fire({
-          title: "Erro !",
-          text: "Entre em contato com o suporte.",
-          icon: "error",
-          allowOutsideClick: false,
-          cancelButtonColor: "#29abe3",
-          confirmButtonColor: "#29abe3",
-        });
+      .catch((error) => {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.messages
+        ) {
+          const errorMessages: string[] = error.response.data.messages;
+
+          const errorMessageContent: string = errorMessages
+            .map((message: string, index: number) => {
+              return `${index + 1}. ${message}`;
+            })
+            .join("<br>");
+
+          const errorMessageHTML: string = `<div>${errorMessageContent}</div>`;
+
+          Swal.fire({
+            title: "Atenção !",
+            html: errorMessageHTML,
+            icon: "warning",
+            allowOutsideClick: false,
+            cancelButtonColor: "#29abe3",
+            confirmButtonColor: "#29abe3",
+          });
+        }
       });
   };
 

@@ -39,19 +39,22 @@ interface MarkingsOfDay {
   totalHoursByDay: number;
 }
 
+interface MarkingsOfDayProps {
+  markingsOfDay: MarkingsOfDay;
+}
+
 const Home = () => {
   const { user } = useSidebar();
   const [open, setOpen] = useState(false);
-  const apiUrl = "https://localhost:7083/User/update-password";
-  const apiUrl2 = "https://localhost:7083/Marking";
   const token = getAuthToken();
 
-  const [markingsOfDay, setMarkingsOfDay] = useState<MarkingsOfDay>();
-
+  const [markings, setMarkings] = useState<MarkingsOfDayProps>();
   const [formData, setFormData] = useState<ResetePasswordData>({
     password: "",
     newPassword: "",
   });
+
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -62,14 +65,22 @@ const Home = () => {
     });
   };
 
-  const handleResetePasswordClick = () => {
-    axios
-      .put(apiUrl, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+  const handleResetePasswordClick = async () => {
+    setErrorMessage(null);
+
+    await axios
+      .put(
+        `${import.meta.env.VITE_APP_API_URL}/User/update-password`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       .then(() => {
+        setOpen(false);
+
         Swal.fire({
           title: "Resete Realizado !",
           icon: "success",
@@ -78,15 +89,15 @@ const Home = () => {
           confirmButtonColor: "#29abe3",
         });
       })
-      .catch(() => {
-        Swal.fire({
-          title: "Erro !",
-          text: "Entre em contato com o suporte.",
-          icon: "error",
-          allowOutsideClick: false,
-          cancelButtonColor: "#29abe3",
-          confirmButtonColor: "#29abe3",
-        });
+      .catch((error) => {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.messages
+        ) {
+          const errorMessages = error.response.data.messages;
+          setErrorMessage(errorMessages);
+        }
       });
   };
 
@@ -96,14 +107,13 @@ const Home = () => {
 
   useEffect(() => {
     axios
-      .get(apiUrl2, {
+      .get(`${import.meta.env.VITE_APP_API_URL}/Marking`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then(async (response) => {
-        const markings = response.data;
-        setMarkingsOfDay(markings);
+      .then(async (response: any) => {
+        setMarkings(response.data);
       })
       .catch(() => {
         Swal.fire({
@@ -128,11 +138,12 @@ const Home = () => {
               <h1>Marcação Dia</h1>
               <Button color="#fff" text="Marcar Ponto" link="/markTime" />
             </ContentHeader>
-            {markingsOfDay?.marking && markingsOfDay.marking?.length > 0 ? (
+            {markings?.markingsOfDay?.marking &&
+            markings.markingsOfDay.marking?.length > 0 ? (
               <>
                 <Clock />
                 <ContentMarkTime>
-                  {markingsOfDay.marking.map((item, index) => (
+                  {markings.markingsOfDay.marking.map((item, index) => (
                     <MarkTime
                       time={
                         item.hour
@@ -182,8 +193,9 @@ const Home = () => {
           >
             <TextField
               id="password"
-              label="Nova Senha"
+              label="Senha"
               variant="outlined"
+              type="password"
               value={formData.password}
               onChange={handleChange}
             />
@@ -191,6 +203,7 @@ const Home = () => {
               id="newPassword"
               label="Nova Senha"
               variant="outlined"
+              type="password"
               value={formData.newPassword}
               onChange={handleChange}
             />
@@ -201,6 +214,17 @@ const Home = () => {
                 onClick={handleResetePasswordClick}
               />
             </div>
+            {errorMessage && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  color: "red",
+                }}
+              >
+                {errorMessage}
+              </div>
+            )}
           </div>
         </Box>
       </Modal>

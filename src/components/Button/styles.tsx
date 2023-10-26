@@ -13,7 +13,7 @@ export const Button = styled.button<CustomButtonProps>`
   color: ${(props) => props.color};
   background-color: #29abe3;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 900;
   border-radius: 5px;
   height: 3rem;
   cursor: pointer;

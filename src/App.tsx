@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -25,42 +26,47 @@ const theme = createTheme({
 });
 
 function App() {
+  const [authenticated, setAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      const isAuthenticatedResult = await isAuthenticated();
+      setAuthenticated(isAuthenticatedResult);
+    };
+
+    checkAuthentication();
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <SidebarProvider>
         <Router>
           <Routes>
-            <Route path="/" element={<Login />}></Route>
-            <Route path="/login" element={<Login />}></Route>
-            <Route path="/resetePassword" element={<ResetePassword />}></Route>
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/resetePassword" element={<ResetePassword />} />
             <Route
               path="/home"
-              element={isAuthenticated() ? <Home /> : <Navigate to="/login" />}
-            ></Route>
+              element={authenticated ? <Home /> : <Navigate to="/login" />}
+            />
             <Route
-              path="/perfil"
-              element={
-                isAuthenticated() ? <Perfil /> : <Navigate to="/login" />
-              }
-            ></Route>
+              path="/profile"
+              element={authenticated ? <Perfil /> : <Navigate to="/login" />}
+            />
             <Route
               path="/markTime"
-              element={
-                isAuthenticated() ? <MarkTime /> : <Navigate to="/login" />
-              }
-            ></Route>
+              element={authenticated ? <MarkTime /> : <Navigate to="/login" />}
+            />
             <Route
               path="/dotMirror"
-              element={
-                isAuthenticated() ? <DotMirror /> : <Navigate to="/login" />
-              }
-            ></Route>
+              element={authenticated ? <DotMirror /> : <Navigate to="/login" />}
+            />
             <Route
               path="/newEmployee"
               element={
-                isAuthenticated() ? <NewEmployee /> : <Navigate to="/login" />
+                authenticated ? <NewEmployee /> : <Navigate to="/login" />
               }
-            ></Route>
+            />
           </Routes>
         </Router>
       </SidebarProvider>

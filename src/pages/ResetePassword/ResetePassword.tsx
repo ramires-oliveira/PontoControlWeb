@@ -32,10 +32,11 @@ const ResetePassword = () => {
   };
 
   const handleResetePasswordClick = () => {
-    const apiUrl = "https://localhost:7083/User/update-password";
-
     axios
-      .put(apiUrl, formData)
+      .put(
+        `${import.meta.env.VITE_APP_API_URL}/User/update-password-no-logged`,
+        formData
+      )
       .then(() => {
         Swal.fire({
           title: "Resete Realizado !",
@@ -47,15 +48,31 @@ const ResetePassword = () => {
 
         navigate("/login");
       })
-      .catch(() => {
-        Swal.fire({
-          title: "Erro !",
-          text: "Entre em contato com o suporte.",
-          icon: "error",
-          allowOutsideClick: false,
-          cancelButtonColor: "#29abe3",
-          confirmButtonColor: "#29abe3",
-        });
+      .catch((error) => {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.messages
+        ) {
+          const errorMessages: string[] = error.response.data.messages;
+
+          const errorMessageContent: string = errorMessages
+            .map((message: string, index: number) => {
+              return `${index + 1}. ${message}`;
+            })
+            .join("<br>");
+
+          const errorMessageHTML: string = `<div>${errorMessageContent}</div>`;
+
+          Swal.fire({
+            title: "Atenção !",
+            html: errorMessageHTML,
+            icon: "warning",
+            allowOutsideClick: false,
+            cancelButtonColor: "#29abe3",
+            confirmButtonColor: "#29abe3",
+          });
+        }
       });
   };
 
@@ -77,8 +94,9 @@ const ResetePassword = () => {
           />
           <TextField
             id="password"
-            label="Nova Senha"
+            label="Senha"
             variant="outlined"
+            type="password"
             value={formData.password}
             onChange={handleChange}
           />
@@ -86,13 +104,14 @@ const ResetePassword = () => {
             id="newPassword"
             label="Nova Senha"
             variant="outlined"
+            type="password"
             value={formData.newPassword}
             onChange={handleChange}
           />
           <div>
             <Button
               color="#3c3c3b"
-              text="ENTRAR"
+              text="ALTERAR"
               onClick={handleResetePasswordClick}
             />
             <span>

@@ -26,6 +26,7 @@ import {
   eachDayOfInterval,
   endOfMonth,
   format,
+  isAfter,
   isSameDay,
   isSameMonth,
   isSaturday,
@@ -40,11 +41,12 @@ import { getAuthToken } from "../../auth/authService";
 import "dayjs/locale/Pt";
 import { ptBR } from "@mui/x-date-pickers/locales";
 import { AiOutlineClear } from "react-icons/ai";
+import Swal from "sweetalert2";
 
 const locale = ptBR.components.MuiLocalizationProvider.defaultProps.localeText;
 
 interface FilterMarking {
-  starDate: Date | null;
+  startDate: Date | null;
   endDate: Date | null;
 }
 
@@ -66,7 +68,7 @@ interface MarkingsOfDay {
 const DotMirror = () => {
   const [markings, setMarkings] = useState<MarkingsOfDay[]>();
   const [formData, setFormData] = useState<FilterMarking>({
-    starDate: null,
+    startDate: null,
     endDate: null,
   });
 
@@ -86,9 +88,9 @@ const DotMirror = () => {
   };
 
   const updateDaysArray = () => {
-    if (formData.starDate && formData.endDate) {
+    if (formData.startDate && formData.endDate) {
       const filteredDaysArray = generateDaysArray(
-        new Date(formData.starDate),
+        new Date(formData.startDate),
         new Date(formData.endDate)
       );
       setDaysArray(filteredDaysArray);
@@ -109,31 +111,54 @@ const DotMirror = () => {
   };
 
   const handleFilterClick = async () => {
-    const apiUrl = "https://localhost:7083/Marking/";
-    const token = getAuthToken();
+    try {
+      const token = getAuthToken();
 
-    await axios
-      .put(apiUrl, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then(async (response) => {
-        const markings = response.data;
-        setMarkings(markings);
-        updateDaysArray();
-      })
-      .catch((error: any) => {
-        console.error(error);
-      });
+      const response = await axios.put(
+        `${import.meta.env.VITE_APP_API_URL}/Marking/`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setMarkings(response.data);
+      updateDaysArray();
+    } catch (error: any) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.messages
+      ) {
+        const errorMessages: string[] = error.response.data.messages;
+
+        const errorMessageContent: string = errorMessages
+          .map((message: string, index: number) => {
+            return `${index + 1}. ${message}`;
+          })
+          .join("<br>");
+
+        const errorMessageHTML: string = `<div>${errorMessageContent}</div>`;
+
+        Swal.fire({
+          title: "Atenção !",
+          html: errorMessageHTML,
+          icon: "warning",
+          allowOutsideClick: false,
+          cancelButtonColor: "#29abe3",
+          confirmButtonColor: "#29abe3",
+        });
+      }
+    }
   };
 
   const fetchMarkings = async () => {
-    const apiUrl = "https://localhost:7083/Marking/";
     const token = getAuthToken();
 
-    axios
-      .put(apiUrl, formData, {
+    await axios
+      .put(`${import.meta.env.VITE_APP_API_URL}/Marking/`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -156,18 +181,16 @@ const DotMirror = () => {
     setInitialDaysArray(initialDaysArray);
   }, []);
 
-  function clearMessage() {
-    setFormData({
-      starDate: null,
-      endDate: null,
-    });
-  }
+  const clearMessage = () => {
+    formData.startDate = null;
+    formData.endDate = null;
+  };
 
-  async function handleClearFilter() {
+  const handleClearFilter = async () => {
     await clearMessage();
     setDaysArray(initialDaysArray);
     fetchMarkings();
-  }
+  };
 
   return (
     <>
@@ -186,11 +209,11 @@ const DotMirror = () => {
                 localeText={locale}
               >
                 <DatePicker
-                  key="starDate"
+                  key="startDate"
                   label="Início"
                   format="DD/MM/YYYY"
-                  value={formData.starDate}
-                  onChange={(date) => handleChange(date, "starDate")}
+                  value={formData.startDate}
+                  onChange={(date) => handleChange(date, "startDate")}
                 />
                 <DatePicker
                   key="endDate"
@@ -199,7 +222,7 @@ const DotMirror = () => {
                   value={formData.endDate}
                   onChange={(date) => handleChange(date, "endDate")}
                 />
-                <button onClick={handleClearFilter}>
+                <button onClick={handleClearFilter} className="buttonFilter">
                   <AiOutlineClear />
                 </button>
               </LocalizationProvider>

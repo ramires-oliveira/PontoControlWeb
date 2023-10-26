@@ -5,7 +5,7 @@ import Button from "../../components/Button/Index";
 import { Container, ContentImg, ContentForm, Form } from "./styles";
 import axios from "axios";
 import { useState } from "react";
-import { setAuthToken } from "../../auth/authService";
+import { logout, setAuthToken } from "../../auth/authService";
 import { useNavigate } from "react-router-dom";
 import { useSidebar } from "../../reactContext/SidebarContext";
 import Swal from "sweetalert2";
@@ -35,27 +35,44 @@ const Login = () => {
   };
 
   const handleLoginClick = async () => {
-    const apiUrl = "https://localhost:7083/Login";
+    logout();
 
-    await axios
-      .post(apiUrl, formData)
-      .then(async (response) => {
-        const user = response.data;
-        setUser(user);
-        setAuthToken(user.token);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_API_URL}/Login`,
+        formData
+      );
 
-        navigate("/home");
-      })
-      .catch(() => {
+      setUser(response.data);
+      setAuthToken(response.data.token);
+
+      navigate("/home");
+    } catch (error: any) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.messages
+      ) {
+        const errorMessages: string[] = error.response.data.messages;
+
+        const errorMessageContent: string = errorMessages
+          .map((message: string, index: number) => {
+            return `${index + 1}. ${message}`;
+          })
+          .join("<br>");
+
+        const errorMessageHTML: string = `<div>${errorMessageContent}</div>`;
+
         Swal.fire({
-          title: "Erro !",
-          text: "Entre em contato com o suporte.",
-          icon: "error",
+          title: "Atenção !",
+          html: errorMessageHTML,
+          icon: "warning",
           allowOutsideClick: false,
           cancelButtonColor: "#29abe3",
           confirmButtonColor: "#29abe3",
         });
-      });
+      }
+    }
   };
 
   return (
@@ -78,6 +95,7 @@ const Login = () => {
             id="password"
             label="Senha"
             variant="outlined"
+            type="password"
             value={formData.password}
             onChange={handleChange}
           />

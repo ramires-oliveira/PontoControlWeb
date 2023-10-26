@@ -25,7 +25,9 @@ export function Map({ onAddressChange }: MapProps) {
 
         try {
           const response = await axios.get(
-            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyD1Vl5KStAedRHH92veIfmeLSVJWPd_QuY`
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${
+              import.meta.env.VITE_APP_MAP_KEY
+            }`
           );
           if (response.data.results.length > 0) {
             setCurrentAddress(response.data.results[0].formatted_address);
@@ -45,7 +47,7 @@ export function Map({ onAddressChange }: MapProps) {
   };
 
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: "AIzaSyD1Vl5KStAedRHH92veIfmeLSVJWPd_QuY",
+    googleMapsApiKey: import.meta.env.VITE_APP_MAP_KEY,
   });
 
   return (

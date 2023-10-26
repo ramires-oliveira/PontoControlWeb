@@ -46,6 +46,25 @@ export const ContentNotMarkTime = styled.div`
 `;
 
 export const FilterData = styled.div`
+  .buttonFilter {
+    background-color: #29abe3;
+    border: none;
+    width: 60px;
+    border-radius: 5px;
+    margin-left: 2px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    svg {
+      color: white;
+      font-size: 26px;
+    }
+  }
+
+  .buttonFilter:hover {
+    background-color: #42c0f0;
+  }
+
   @media (max-width: 815px) {
     width: 100%;
     justify-content: space-between;

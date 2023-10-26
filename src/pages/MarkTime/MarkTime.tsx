@@ -23,7 +23,6 @@ interface MarkTimeData {
 
 const MarkTime = () => {
   const [currentAddress, setCurrentAddress] = useState("");
-  const apiUrl = "https://localhost:7083/Marking";
   const token = getAuthToken();
 
   const handleAddressChange = (newAddress: string) => {
@@ -37,7 +36,7 @@ const MarkTime = () => {
     };
 
     await axios
-      .post(apiUrl, formData, {
+      .post(`${import.meta.env.VITE_APP_API_URL}/Marking`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -52,15 +51,31 @@ const MarkTime = () => {
           confirmButtonColor: "#29abe3",
         });
       })
-      .catch(() => {
-        Swal.fire({
-          title: "Erro !",
-          text: "Entre em contato com o suporte.",
-          icon: "error",
-          allowOutsideClick: false,
-          cancelButtonColor: "#29abe3",
-          confirmButtonColor: "#29abe3",
-        });
+      .catch((error) => {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.messages
+        ) {
+          const errorMessages: string[] = error.response.data.messages;
+
+          const errorMessageContent: string = errorMessages
+            .map((message: string, index: number) => {
+              return `${index + 1}. ${message}`;
+            })
+            .join("<br>");
+
+          const errorMessageHTML: string = `<div>${errorMessageContent}</div>`;
+
+          Swal.fire({
+            title: "Atenção !",
+            html: errorMessageHTML,
+            icon: "warning",
+            allowOutsideClick: false,
+            cancelButtonColor: "#29abe3",
+            confirmButtonColor: "#29abe3",
+          });
+        }
       });
   };
 
