@@ -177,15 +177,15 @@ const DotMirror = () => {
   const handleDowloadExcel = async () => {
     const token = getAuthToken();
 
+    const excel : DowloadExcelMarking = {
+      listMarkings: []
+    }
+
     await returnReportDowload().then((response) => {
-      setReportDowload(response);
+      excel.listMarkings = response;
     });
 
-    const excel: DowloadExcelMarking = {
-      listMarkings: reportDowload!,
-    };
-
-    axios
+    await axios
       .put(`${import.meta.env.VITE_APP_API_URL}/Marking/download-markings`, excel, {
         responseType: "blob",
         headers: {
