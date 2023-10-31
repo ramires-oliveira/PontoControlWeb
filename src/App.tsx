@@ -26,17 +26,6 @@ const theme = createTheme({
 });
 
 function App() {
-  const [authenticated, setAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const checkAuthentication = async () => {
-      const isAuthenticatedResult = await isAuthenticated();
-      setAuthenticated(isAuthenticatedResult);
-    };
-
-    checkAuthentication();
-  }, []);
-
   return (
     <ThemeProvider theme={theme}>
       <SidebarProvider>
@@ -47,24 +36,30 @@ function App() {
             <Route path="/resetePassword" element={<ResetePassword />} />
             <Route
               path="/home"
-              element={authenticated ? <Home /> : <Navigate to="/login" />}
+              element={isAuthenticated() ? <Home /> : <Navigate to="/login" />}
             />
             <Route
               path="/profile"
-              element={authenticated ? <Perfil /> : <Navigate to="/login" />}
+              element={
+                isAuthenticated() ? <Perfil /> : <Navigate to="/login" />
+              }
             />
             <Route
               path="/markTime"
-              element={authenticated ? <MarkTime /> : <Navigate to="/login" />}
+              element={
+                isAuthenticated() ? <MarkTime /> : <Navigate to="/login" />
+              }
             />
             <Route
               path="/dotMirror"
-              element={authenticated ? <DotMirror /> : <Navigate to="/login" />}
+              element={
+                isAuthenticated() ? <DotMirror /> : <Navigate to="/login" />
+              }
             />
             <Route
               path="/newEmployee"
               element={
-                authenticated ? <NewEmployee /> : <Navigate to="/login" />
+                isAuthenticated() ? <NewEmployee /> : <Navigate to="/login" />
               }
             />
           </Routes>

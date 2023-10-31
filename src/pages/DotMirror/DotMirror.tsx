@@ -112,6 +112,35 @@ const DotMirror = () => {
 
   const handleFilterClick = async () => {
     try {
+      const startDate = formData.startDate as Date;
+      const endDate = formData.endDate as Date;
+
+      if (startDate === null || endDate === null) {
+        Swal.fire({
+          title: "Atenção !",
+          html: "As datas precisam ser preenchidas.",
+          icon: "warning",
+          allowOutsideClick: false,
+          cancelButtonColor: "#29abe3",
+          confirmButtonColor: "#29abe3",
+        });
+
+        return;
+      }
+
+      if (startDate > endDate) {
+        Swal.fire({
+          title: "Atenção !",
+          html: "Data inicial maior que data final.",
+          icon: "warning",
+          allowOutsideClick: false,
+          cancelButtonColor: "#29abe3",
+          confirmButtonColor: "#29abe3",
+        });
+
+        return;
+      }
+
       const token = getAuthToken();
 
       const response = await axios.put(
