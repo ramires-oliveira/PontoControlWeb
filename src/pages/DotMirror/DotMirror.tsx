@@ -31,6 +31,7 @@ import {
   isSameMonth,
   isSaturday,
   isSunday,
+  set,
   startOfMonth,
 } from "date-fns";
 import { ptBR as pt } from "date-fns/locale";
@@ -45,23 +46,23 @@ import Swal from "sweetalert2";
 
 const locale = ptBR.components.MuiLocalizationProvider.defaultProps.localeText;
 
+interface DowloadExcelMarking {
+  listMarkings: MarkingsOfDay[];
+}
+
 interface FilterMarking {
   startDate: Date | null;
   endDate: Date | null;
 }
 
-interface Marking {
+interface MarkingResponse {
   hour: Date;
   address: string;
-  collaborator: {
-    id: string;
-    name: string;
-  };
 }
 
 interface MarkingsOfDay {
-  date: string;
-  marking?: Marking[];
+  date: Date | string;
+  marking?: MarkingResponse[];
   totalHoursByDay: number;
 }
 
@@ -78,6 +79,8 @@ const DotMirror = () => {
   const currentDate = new Date();
   const firstDayOfMonth = startOfMonth(currentDate);
   const lastDayOfMonth = endOfMonth(currentDate);
+
+  const [reportDowload, setReportDowload] = useState<MarkingsOfDay[] | undefined>([]);
 
   const generateDaysArray = (startDate: Date, endDate: Date): Date[] => {
     return eachDayOfInterval({ start: startDate, end: endDate });
@@ -200,6 +203,40 @@ const DotMirror = () => {
       });
   };
 
+  const handleDowloadExcel = async () => {
+    const token = getAuthToken();
+
+    const excel : DowloadExcelMarking = {
+      listMarkings: []
+    }
+
+    await returnReportDowload().then((response) => {
+      excel.listMarkings = response;
+    });
+
+    await axios
+      .put(`${import.meta.env.VITE_APP_API_URL}/Marking/download-markings`, excel, {
+        responseType: "blob",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(async (response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = url;
+        a.download = "relatorio.xlsx";
+        document.body.appendChild(a);
+        a.click();
+      })
+      .catch((error: any) => {
+        console.error(error);
+      });
+  };
+
+
   useEffect(() => {
     fetchMarkings();
   }, []);
@@ -219,6 +256,30 @@ const DotMirror = () => {
     await clearMessage();
     setDaysArray(initialDaysArray);
     fetchMarkings();
+  };
+
+  const returnReportDowload = async () => {
+    let report: MarkingsOfDay[] = [];
+    if (daysArray) {
+      daysArray.map((day) => {
+        if (markings) {
+          const filteredMarkings = markings.filter((item) =>
+            isSameDay(new Date(item.date), day)
+          );
+
+          if (filteredMarkings.length > 0) {
+            report.push(filteredMarkings[0]);
+          } else {
+            report.push({
+              date: new Date(format(day, "yyyy-MM-dd")),
+              marking: new Array<MarkingResponse>(),
+              totalHoursByDay: 0,
+            });
+          }
+        }
+      })
+    }
+    return report;
   };
 
   return (
@@ -258,10 +319,12 @@ const DotMirror = () => {
             </FilterData>
             <FilterActions>
               <Button color="#fff" text="Filtrar" onClick={handleFilterClick} />
-              <Button color="#fff" text="Exportar" icon />
+              <Button color="#fff" text="Exportar" icon
+                onClick={() => handleDowloadExcel()}
+              />
             </FilterActions>
           </ContentFilter>
-          <ContentTable>
+          <ContentTable>''
             <div className="content">
               <TableContainer component={Paper}>
                 <Table size="small">
@@ -285,8 +348,8 @@ const DotMirror = () => {
                         const cellClass = isHoliday
                           ? "holiday-cell"
                           : isSaturdayDay || isSundayDay
-                          ? "dayOff-cell"
-                          : "";
+                            ? "dayOff-cell"
+                            : "";
 
                         let daysData: MarkingsOfDay | undefined;
 
@@ -306,8 +369,8 @@ const DotMirror = () => {
                         const markingCells =
                           numMarkings < 4
                             ? Array.from({ length: 4 - numMarkings }).fill(
-                                "00:00"
-                              )
+                              "00:00"
+                            )
                             : [];
 
                         return (
@@ -317,39 +380,39 @@ const DotMirror = () => {
                             </TableCell>
                             {daysData && daysData.marking
                               ? (numMarkings < 4
-                                  ? [...daysData.marking, ...markingCells]
-                                  : daysData.marking
-                                ).map((marking: any, markingIndex: any) => (
-                                  <TableCell
-                                    key={markingIndex}
-                                    className={cellClass}
-                                  >
-                                    {cellClass === "holiday-cell"
-                                      ? "Feriado"
-                                      : cellClass === "dayOff-cell"
+                                ? [...daysData.marking, ...markingCells]
+                                : daysData.marking
+                              ).map((marking: any, markingIndex: any) => (
+                                <TableCell
+                                  key={markingIndex}
+                                  className={cellClass}
+                                >
+                                  {cellClass === "holiday-cell"
+                                    ? "Feriado"
+                                    : cellClass === "dayOff-cell"
                                       ? "Folga"
                                       : marking && marking.hour
-                                      ? new Date(
+                                        ? new Date(
                                           marking.hour
                                         ).toLocaleTimeString([], {
                                           hour: "2-digit",
                                           minute: "2-digit",
                                         })
-                                      : "00:00"}
-                                  </TableCell>
-                                ))
+                                        : "00:00"}
+                                </TableCell>
+                              ))
                               : [...Array(4)].map((_, markingIndex) => (
-                                  <TableCell
-                                    key={markingIndex}
-                                    className={cellClass}
-                                  >
-                                    {cellClass === "holiday-cell"
-                                      ? "Feriado"
-                                      : cellClass === "dayOff-cell"
+                                <TableCell
+                                  key={markingIndex}
+                                  className={cellClass}
+                                >
+                                  {cellClass === "holiday-cell"
+                                    ? "Feriado"
+                                    : cellClass === "dayOff-cell"
                                       ? "Folga"
                                       : "00:00"}
-                                  </TableCell>
-                                ))}
+                                </TableCell>
+                              ))}
 
                             <TableCell>00:00</TableCell>
                             <TableCell>00:00</TableCell>
