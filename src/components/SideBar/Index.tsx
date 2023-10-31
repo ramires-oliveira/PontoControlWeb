@@ -18,7 +18,7 @@ export function SideBar() {
   return (
     <SidebarContainer isOpen={isOpen}>
       <ContentHeader isOpen={isOpen}>
-        <Link to="/perfil">
+        <Link to="/profile">
           <div className="initial">
             <span>
               {user?.name
