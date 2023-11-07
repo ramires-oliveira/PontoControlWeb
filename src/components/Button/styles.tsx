@@ -15,7 +15,7 @@ export const Button = styled.button<CustomButtonProps>`
   font-size: 16px;
   font-weight: 900;
   border-radius: 5px;
-  height: 3rem;
+  height: 3.5rem;
   cursor: pointer;
   border: none;
   padding: 1rem 1.5rem;

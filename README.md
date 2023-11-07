@@ -1,27 +1,53 @@
-# React + TypeScript + Vite
+# Ponto Control
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este é um projeto em React com TypeScript para gerenciamento do ponto eletrônico de uma empresa. Ele se integra perfeitamente com uma API em C# para automatizar as operações de um sistema de registro de ponto eletrônico, simplificando o controle de horas trabalhadas e presenças.
 
-Currently, two official plugins are available:
+## Recursos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Cadastro de novos colaboradores.
+- Registro de entrada e saída de funcionários com localização atual.
+- Acompanhamento de horas trabalhadas.
+- Relatório com filtragem por datas.
 
-## Expanding the ESLint configuration
+## Pré-requisitos
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Antes de iniciar, certifique-se de ter as seguintes ferramentas instaladas:
 
-- Configure the top-level `parserOptions` property like this:
+- [Node.js](https://nodejs.org/)
+- [npm](https://www.npmjs.com/) ou [Yarn](https://yarnpkg.com/) (recomendado)
 
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
-```
+## Instalação
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+1. Clone o repositório:
+
+   ```bash
+   git clone <URL_DO_SEU_REPOSITORIO>
+   ```
+
+2. Navegue até o diretório do projeto:
+
+   ```bash
+   cd nome-do-projeto
+   ```
+
+3. Instale as dependências:
+
+   ```bash
+   npm install
+   # ou
+   yarn install
+   ```
+
+4. Certifique-se de configurar a URL da API através da variável de ambiente `VITE_APP_API_URL` no arquivo `.env` caso esteja rodando a API em uma porta diferente da `7083`:
+
+   ```bash
+   VITE_APP_API_URL=https://localhost:7083
+   ```
+
+5. Para executar o projeto em modo de desenvolvimento, use o seguinte comando:
+
+   ```bash
+   npm run dev
+   # ou
+   yarn dev
+   ```

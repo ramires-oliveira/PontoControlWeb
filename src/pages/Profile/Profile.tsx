@@ -137,6 +137,7 @@ const Perfil = () => {
                 id="password"
                 label="Senha"
                 variant="outlined"
+                type="password"
                 value={formData.password}
                 onChange={handleChange}
               />
@@ -144,6 +145,7 @@ const Perfil = () => {
                 id="newPassword"
                 label="Nova Senha"
                 variant="outlined"
+                type="password"
                 value={formData.newPassword}
                 onChange={handleChange}
               />

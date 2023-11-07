@@ -5,7 +5,6 @@ import {
   ContentTable,
   FilterData,
   FilterActions,
-  ContentNotMarkTime,
 } from "./styles";
 import NavBar from "../../components/NavBar/Index";
 import SideBar from "../../components/SideBar/Index";
@@ -26,18 +25,14 @@ import {
   eachDayOfInterval,
   endOfMonth,
   format,
-  isAfter,
   isSameDay,
-  isSameMonth,
   isSaturday,
   isSunday,
-  set,
   startOfMonth,
 } from "date-fns";
 import { ptBR as pt } from "date-fns/locale";
 import Holidays from "date-holidays";
 import axios from "axios";
-import Logo3 from "../../assets/images/Logo_3.png";
 import { getAuthToken } from "../../auth/authService";
 import "dayjs/locale/Pt";
 import { ptBR } from "@mui/x-date-pickers/locales";
@@ -63,7 +58,7 @@ interface MarkingResponse {
 interface MarkingsOfDay {
   date: Date | string;
   marking?: MarkingResponse[];
-  totalHoursByDay: number;
+  totalHoursByDay: string | null;
 }
 
 const DotMirror = () => {
@@ -80,14 +75,20 @@ const DotMirror = () => {
   const firstDayOfMonth = startOfMonth(currentDate);
   const lastDayOfMonth = endOfMonth(currentDate);
 
-  const [reportDowload, setReportDowload] = useState<MarkingsOfDay[] | undefined>([]);
-
   const generateDaysArray = (startDate: Date, endDate: Date): Date[] => {
     return eachDayOfInterval({ start: startDate, end: endDate });
   };
 
   const formatDay = (day: Date): string => {
-    return format(day, "dd/MM/yyyy - E", { locale: pt });
+    let formattedDay = format(day, "dd/MM/yyyy - E", { locale: pt });
+
+    formattedDay = formattedDay.replace(/\b\w/g, (l) => l.toUpperCase());
+
+    if (formattedDay.includes("SáB")) {
+      formattedDay = formattedDay.replace("SáB", "Sáb");
+    }
+
+    return formattedDay;
   };
 
   const updateDaysArray = () => {
@@ -206,21 +207,25 @@ const DotMirror = () => {
   const handleDowloadExcel = async () => {
     const token = getAuthToken();
 
-    const excel : DowloadExcelMarking = {
-      listMarkings: []
-    }
-
+    const excel: DowloadExcelMarking = {
+      listMarkings: [],
+    };
     await returnReportDowload().then((response) => {
       excel.listMarkings = response;
     });
+    console.log("excel", excel);
 
     await axios
-      .put(`${import.meta.env.VITE_APP_API_URL}/Marking/download-markings`, excel, {
-        responseType: "blob",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      .put(
+        `${import.meta.env.VITE_APP_API_URL}/Marking/download-markings`,
+        excel,
+        {
+          responseType: "blob",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       .then(async (response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
 
@@ -235,7 +240,6 @@ const DotMirror = () => {
         console.error(error);
       });
   };
-
 
   useEffect(() => {
     fetchMarkings();
@@ -273,11 +277,11 @@ const DotMirror = () => {
             report.push({
               date: new Date(format(day, "yyyy-MM-dd")),
               marking: new Array<MarkingResponse>(),
-              totalHoursByDay: 0,
+              totalHoursByDay: null,
             });
           }
         }
-      })
+      });
     }
     return report;
   };
@@ -293,11 +297,7 @@ const DotMirror = () => {
           </ContentHeader>
           <ContentFilter>
             <FilterData>
-              <LocalizationProvider
-                dateAdapter={AdapterDayjs}
-                adapterLocale="Pt"
-                localeText={locale}
-              >
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   key="startDate"
                   label="Início"
@@ -319,12 +319,15 @@ const DotMirror = () => {
             </FilterData>
             <FilterActions>
               <Button color="#fff" text="Filtrar" onClick={handleFilterClick} />
-              <Button color="#fff" text="Exportar" icon
+              <Button
+                color="#fff"
+                text="Exportar"
+                icon
                 onClick={() => handleDowloadExcel()}
               />
             </FilterActions>
           </ContentFilter>
-          <ContentTable>''
+          <ContentTable>
             <div className="content">
               <TableContainer component={Paper}>
                 <Table size="small">
@@ -336,7 +339,6 @@ const DotMirror = () => {
                       <TableCell>2° Entrada</TableCell>
                       <TableCell>2° Entrada</TableCell>
                       <TableCell>Quant. Horas</TableCell>
-                      <TableCell>Banco de Horas</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -348,8 +350,8 @@ const DotMirror = () => {
                         const cellClass = isHoliday
                           ? "holiday-cell"
                           : isSaturdayDay || isSundayDay
-                            ? "dayOff-cell"
-                            : "";
+                          ? "dayOff-cell"
+                          : "";
 
                         let daysData: MarkingsOfDay | undefined;
 
@@ -359,18 +361,18 @@ const DotMirror = () => {
                           );
                         }
 
-                        // Verifique o número de marcações disponíveis
+                        // Verifica o número de marcações disponíveis
                         const numMarkings =
                           daysData && daysData.marking
                             ? daysData.marking.length
                             : 0;
 
-                        // Preencha as células com "00:00" se houver menos de 4 marcações
+                        // Preenche as células com "00:00" se houver menos de 4 marcações
                         const markingCells =
                           numMarkings < 4
                             ? Array.from({ length: 4 - numMarkings }).fill(
-                              "00:00"
-                            )
+                                "00:00"
+                              )
                             : [];
 
                         return (
@@ -380,42 +382,48 @@ const DotMirror = () => {
                             </TableCell>
                             {daysData && daysData.marking
                               ? (numMarkings < 4
-                                ? [...daysData.marking, ...markingCells]
-                                : daysData.marking
-                              ).map((marking: any, markingIndex: any) => (
-                                <TableCell
-                                  key={markingIndex}
-                                  className={cellClass}
-                                >
-                                  {cellClass === "holiday-cell"
-                                    ? "Feriado"
-                                    : cellClass === "dayOff-cell"
-                                      ? "Folga"
-                                      : marking && marking.hour
+                                  ? [...daysData.marking, ...markingCells]
+                                  : daysData.marking
+                                ).map((marking: any, markingIndex: any) => (
+                                  <>
+                                    <TableCell
+                                      key={markingIndex}
+                                      className={cellClass}
+                                    >
+                                      {cellClass === "holiday-cell"
+                                        ? "Feriado"
+                                        : cellClass === "dayOff-cell"
+                                        ? "Folga"
+                                        : marking && marking.hour
                                         ? new Date(
-                                          marking.hour
-                                        ).toLocaleTimeString([], {
-                                          hour: "2-digit",
-                                          minute: "2-digit",
-                                        })
+                                            marking.hour
+                                          ).toLocaleTimeString([], {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                          })
                                         : "00:00"}
-                                </TableCell>
-                              ))
+                                    </TableCell>
+                                  </>
+                                ))
                               : [...Array(4)].map((_, markingIndex) => (
-                                <TableCell
-                                  key={markingIndex}
-                                  className={cellClass}
-                                >
-                                  {cellClass === "holiday-cell"
-                                    ? "Feriado"
-                                    : cellClass === "dayOff-cell"
+                                  <TableCell
+                                    key={markingIndex}
+                                    className={cellClass}
+                                  >
+                                    {cellClass === "holiday-cell"
+                                      ? "Feriado"
+                                      : cellClass === "dayOff-cell"
                                       ? "Folga"
                                       : "00:00"}
-                                </TableCell>
-                              ))}
-
-                            <TableCell>00:00</TableCell>
-                            <TableCell>00:00</TableCell>
+                                  </TableCell>
+                                ))}
+                            <TableCell>
+                              {daysData?.totalHoursByDay
+                                ? `${daysData?.totalHoursByDay.split(":")[0]}:${
+                                    daysData?.totalHoursByDay.split(":")[1]
+                                  }`
+                                : "00:00"}
+                            </TableCell>
                           </TableRow>
                         );
                       })}

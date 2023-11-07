@@ -49,7 +49,8 @@ export const FilterData = styled.div`
   .buttonFilter {
     background-color: #29abe3;
     border: none;
-    width: 60px;
+    min-width: 60px;
+    min-height: 55px;
     border-radius: 5px;
     margin-left: 2px;
     cursor: pointer;

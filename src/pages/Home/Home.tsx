@@ -102,7 +102,7 @@ const Home = () => {
   };
 
   useEffect(() => {
-    setOpen(user?.isFirstLogin ? user.isFirstLogin : false);
+    setOpen(!user?.isFirstLogin ? true : false);
   }, [user]);
 
   useEffect(() => {

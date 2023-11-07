@@ -44,7 +44,7 @@ export function NavBar() {
         <NavbarMobile>
           <RxHamburgerMenu onClick={toggleNav} />
           <NavLink
-            to="/perfil"
+            to="/profile"
             id="routes"
             onClick={() => toggleMenu && toggleNav}
           >
@@ -78,6 +78,9 @@ export function NavBar() {
           >
             <span>Espelho de Ponto</span>
           </NavLink>
+          <div id="routes" onClick={handleLogout}>
+            <span>Sair</span>
+          </div>
         </NavbarMobile>
       )}
       <RxHamburgerMenu className="menuMobile" onClick={toggleNav} />
