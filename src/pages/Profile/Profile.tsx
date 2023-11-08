@@ -112,13 +112,15 @@ const Perfil = () => {
                 disabled
                 value={user?.name}
               />
-              <TextField
-                id="document"
-                label="Documento"
-                variant="outlined"
-                disabled
-                value={user?.document}
-              />
+              {user?.typeUser === 1 && (
+                <TextField
+                  id="document"
+                  label="Documento"
+                  variant="outlined"
+                  disabled
+                  value={user?.document}
+                />
+              )}
               <TextField
                 id="email"
                 label="Email"
@@ -126,13 +128,15 @@ const Perfil = () => {
                 disabled
                 value={user?.email}
               />
-              <TextField
-                id="position"
-                label="Cargo"
-                variant="outlined"
-                disabled
-                value={user?.position}
-              />
+              {user?.typeUser === 1 && (
+                <TextField
+                  id="position"
+                  label="Cargo"
+                  variant="outlined"
+                  disabled
+                  value={user?.position}
+                />
+              )}
               <TextField
                 id="password"
                 label="Senha"

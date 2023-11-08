@@ -1,5 +1,3 @@
-import axios from "axios";
-
 const TOKEN_KEY = "auth_token";
 
 export const setAuthToken = (token: string) => {
@@ -19,12 +17,3 @@ export const logout = () => {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem("user");
 };
-
-// Configurar o Axios para incluir o token em todas as solicitações
-// axios.interceptors.request.use((config) => {
-//   const token = getAuthToken();
-//   if (token) {
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });

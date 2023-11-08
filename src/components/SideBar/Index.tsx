@@ -42,50 +42,58 @@ export function SideBar() {
       </Toggle>
 
       <ContentRoutes isOpen={isOpen}>
-        <NavLink
-          to="/home"
-          className={({ isActive, isPending }) =>
-            isPending ? "pending" : isActive ? "active" : ""
-          }
-        >
-          <div>
-            <AiFillHome />
-          </div>
-          <span>Dashboard</span>
-        </NavLink>
-        <NavLink
-          to="/newEmployee"
-          className={({ isActive, isPending }) =>
-            isPending ? "pending" : isActive ? "active" : ""
-          }
-        >
-          <div>
-            <FaUserPlus />
-          </div>
-          <span>Novo Funcionário</span>
-        </NavLink>
-        <NavLink
-          to="/markTime"
-          className={({ isActive, isPending }) =>
-            isPending ? "pending" : isActive ? "active" : ""
-          }
-        >
-          <div>
-            <MdMoreTime />
-          </div>
-          <span>Marcar Ponto</span>
-        </NavLink>
-        <NavLink
-          to="/dotMirror"
-          className={({ isActive, isPending }) =>
-            isPending ? "pending" : isActive ? "active" : ""
-          }
-        >
-          <div>
-            <BsFillCalendarWeekFill />
-          </div>
-          <span>Espelho de Ponto</span>
-        </NavLink>
+        {user?.typeUser === 1 && (
+          <NavLink
+            to="/home"
+            className={({ isActive, isPending }) =>
+              isPending ? "pending" : isActive ? "active" : ""
+            }
+          >
+            <div>
+              <AiFillHome />
+            </div>
+            <span>Dashboard</span>
+          </NavLink>
+        )}
+        {user?.typeUser === 0 && (
+          <NavLink
+            to="/newEmployee"
+            className={({ isActive, isPending }) =>
+              isPending ? "pending" : isActive ? "active" : ""
+            }
+          >
+            <div>
+              <FaUserPlus />
+            </div>
+            <span>Novo Funcionário</span>
+          </NavLink>
+        )}
+        {user?.typeUser === 1 && (
+          <>
+            <NavLink
+              to="/markTime"
+              className={({ isActive, isPending }) =>
+                isPending ? "pending" : isActive ? "active" : ""
+              }
+            >
+              <div>
+                <MdMoreTime />
+              </div>
+              <span>Marcar Ponto</span>
+            </NavLink>
+            <NavLink
+              to="/dotMirror"
+              className={({ isActive, isPending }) =>
+                isPending ? "pending" : isActive ? "active" : ""
+              }
+            >
+              <div>
+                <BsFillCalendarWeekFill />
+              </div>
+              <span>Espelho de Ponto</span>
+            </NavLink>
+          </>
+        )}
       </ContentRoutes>
     </SidebarContainer>
   );

@@ -1,5 +1,4 @@
 import Logo1 from "../../assets/images/Logo_2.png";
-import Logo3 from "../../assets/images/Logo_3.png";
 import { Navbar, NavbarMobile } from "./styles";
 import { FiLogOut } from "react-icons/fi";
 import { RxHamburgerMenu } from "react-icons/rx";
@@ -7,11 +6,13 @@ import { Link, NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { logout } from "../../auth/authService";
 import { useNavigate } from "react-router-dom";
+import { useSidebar } from "../../reactContext/SidebarContext";
 
 export function NavBar() {
   const [toggleMenu, setToggleMenu] = useState(false);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const navigate = useNavigate();
+  const { user } = useSidebar();
 
   const toggleNav = () => {
     setToggleMenu(!toggleMenu);
@@ -57,27 +58,33 @@ export function NavBar() {
           >
             <span>Dashboard</span>
           </NavLink>
-          <NavLink
-            to="/newEmployee"
-            id="routes"
-            onClick={() => toggleMenu && toggleNav}
-          >
-            <span>Novo Funcionário</span>
-          </NavLink>
-          <NavLink
-            to="/markTime"
-            id="routes"
-            onClick={() => toggleMenu && toggleNav}
-          >
-            <span>Marcar Ponto</span>
-          </NavLink>
-          <NavLink
-            to="/dotMirror"
-            id="routes"
-            onClick={() => toggleMenu && toggleNav}
-          >
-            <span>Espelho de Ponto</span>
-          </NavLink>
+          {user?.typeUser === 0 && (
+            <NavLink
+              to="/newEmployee"
+              id="routes"
+              onClick={() => toggleMenu && toggleNav}
+            >
+              <span>Novo Funcionário</span>
+            </NavLink>
+          )}
+          {user?.typeUser === 1 && (
+            <>
+              <NavLink
+                to="/markTime"
+                id="routes"
+                onClick={() => toggleMenu && toggleNav}
+              >
+                <span>Marcar Ponto</span>
+              </NavLink>
+              <NavLink
+                to="/dotMirror"
+                id="routes"
+                onClick={() => toggleMenu && toggleNav}
+              >
+                <span>Espelho de Ponto</span>
+              </NavLink>
+            </>
+          )}
           <div id="routes" onClick={handleLogout}>
             <span>Sair</span>
           </div>
