@@ -7,6 +7,7 @@ import axios from "axios";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import Loading from "../../components/Loading";
 
 interface ResetePasswordData {
   email: string;
@@ -15,6 +16,7 @@ interface ResetePasswordData {
 }
 
 const ResetePassword = () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState<ResetePasswordData>({
     email: "",
@@ -32,6 +34,7 @@ const ResetePassword = () => {
   };
 
   const handleResetePasswordClick = () => {
+    setLoading(true);
     axios
       .put(
         `${import.meta.env.VITE_APP_API_URL}/User/update-password-no-logged`,
@@ -45,10 +48,11 @@ const ResetePassword = () => {
           cancelButtonColor: "#29abe3",
           confirmButtonColor: "#29abe3",
         });
-
+        setLoading(false);
         navigate("/login");
       })
       .catch((error) => {
+        setLoading(false);
         if (
           error.response &&
           error.response.data &&
@@ -114,6 +118,7 @@ const ResetePassword = () => {
               text="ALTERAR"
               onClick={handleResetePasswordClick}
             />
+            {loading && <Loading />}
             <span>
               Voltar para página inicial ? <a href="/login">Clique aqui</a>
             </span>

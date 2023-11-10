@@ -15,6 +15,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import { useState } from "react";
 import { getAuthToken } from "../../auth/authService";
+import Loading from "../../components/Loading";
 
 interface MarkTimeData {
   hour: Date;
@@ -22,6 +23,7 @@ interface MarkTimeData {
 }
 
 const MarkTime = () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [currentAddress, setCurrentAddress] = useState("");
   const token = getAuthToken();
 
@@ -30,6 +32,7 @@ const MarkTime = () => {
   };
 
   const handleMarkTimeClick = async () => {
+    setLoading(true);
     const formData: MarkTimeData = {
       hour: new Date(),
       address: currentAddress,
@@ -50,8 +53,11 @@ const MarkTime = () => {
           cancelButtonColor: "#29abe3",
           confirmButtonColor: "#29abe3",
         });
+        setLoading(false);
       })
       .catch((error) => {
+        setLoading(false);
+
         if (
           error.response &&
           error.response.data &&
@@ -102,6 +108,7 @@ const MarkTime = () => {
                 text="Marcar Ponto"
                 onClick={handleMarkTimeClick}
               />
+              {loading && <Loading />}
             </ContentButton>
           </Content>
         </Card>

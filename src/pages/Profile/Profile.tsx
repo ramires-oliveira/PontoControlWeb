@@ -15,6 +15,7 @@ import axios from "axios";
 import { getAuthToken } from "../../auth/authService";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import Loading from "../../components/Loading";
 
 interface ResetePasswordData {
   password: string;
@@ -27,6 +28,7 @@ const initialFormData = {
 };
 
 const Perfil = () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const { user } = useSidebar();
   const [formData, setFormData] = useState(initialFormData);
   const token = getAuthToken();
@@ -45,6 +47,7 @@ const Perfil = () => {
   };
 
   const handleResetePasswordClick = () => {
+    setLoading(true);
     axios
       .put(
         `${import.meta.env.VITE_APP_API_URL}/User/update-password`,
@@ -65,8 +68,10 @@ const Perfil = () => {
           cancelButtonColor: "#29abe3",
           confirmButtonColor: "#29abe3",
         });
+        setLoading(false);
       })
       .catch((error) => {
+        setLoading(false);
         if (
           error.response &&
           error.response.data &&
@@ -156,6 +161,7 @@ const Perfil = () => {
                 text="Alterar Senha"
                 onClick={handleResetePasswordClick}
               />
+              {loading && <Loading />}
             </ContentButton>
           </Content>
         </Card>
