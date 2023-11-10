@@ -14,6 +14,7 @@ import {
   ContentForm,
   ContentHeader,
 } from "../Profile/styles";
+import Loading from "../../components/Loading";
 
 const initialFormData = {
   firstName: "",
@@ -26,6 +27,7 @@ const initialFormData = {
 };
 
 const NewEmployee = () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState(initialFormData);
   const token = getAuthToken();
 
@@ -42,6 +44,7 @@ const NewEmployee = () => {
   };
 
   const handleNewEmployeeClick = async () => {
+    setLoading(true);
     const updatedFormData = {
       ...formData,
       password: "123456",
@@ -63,8 +66,10 @@ const NewEmployee = () => {
           cancelButtonColor: "#29abe3",
           confirmButtonColor: "#29abe3",
         });
+        setLoading(false);
       })
       .catch((error) => {
+        setLoading(false);
         if (
           error.response &&
           error.response.data &&
@@ -145,6 +150,7 @@ const NewEmployee = () => {
                 text="CADASTRAR"
                 onClick={handleNewEmployeeClick}
               />
+              {loading && <Loading />}
             </ContentButton>
           </Content>
         </Card>

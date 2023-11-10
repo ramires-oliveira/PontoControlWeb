@@ -38,6 +38,7 @@ import "dayjs/locale/Pt";
 import { ptBR } from "@mui/x-date-pickers/locales";
 import { AiOutlineClear } from "react-icons/ai";
 import Swal from "sweetalert2";
+import Loading from "../../components/Loading";
 
 const locale = ptBR.components.MuiLocalizationProvider.defaultProps.localeText;
 
@@ -61,7 +62,9 @@ interface MarkingsOfDay {
   totalHoursByDay: string | null;
 }
 
+
 const DotMirror = () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [markings, setMarkings] = useState<MarkingsOfDay[]>();
   const [formData, setFormData] = useState<FilterMarking>({
     startDate: null,
@@ -205,6 +208,7 @@ const DotMirror = () => {
   };
 
   const handleDowloadExcel = async () => {
+    setLoading(true);
     const token = getAuthToken();
 
     const excel: DowloadExcelMarking = {
@@ -212,8 +216,9 @@ const DotMirror = () => {
     };
     await returnReportDowload().then((response) => {
       excel.listMarkings = response;
+    }).catch(() => {
+      setLoading(false);
     });
-    console.log("excel", excel);
 
     await axios
       .put(
@@ -235,9 +240,11 @@ const DotMirror = () => {
         a.download = "relatorio.xlsx";
         document.body.appendChild(a);
         a.click();
+
+        setLoading(false);
       })
-      .catch((error: any) => {
-        console.error(error);
+      .catch(() => {
+        setLoading(false);
       });
   };
 
@@ -326,6 +333,7 @@ const DotMirror = () => {
                 icon
                 onClick={() => handleDowloadExcel()}
               />
+              {loading && <Loading />}
             </FilterActions>
           </ContentFilter>
           <ContentTable>

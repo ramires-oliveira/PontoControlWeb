@@ -9,6 +9,7 @@ import { logout, setAuthToken } from "../../auth/authService";
 import { useNavigate } from "react-router-dom";
 import { useSidebar } from "../../reactContext/SidebarContext";
 import Swal from "sweetalert2";
+import Loading from "../../components/Loading";
 
 interface LoginData {
   email: string;
@@ -16,6 +17,7 @@ interface LoginData {
 }
 
 const Login = () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<LoginData>({
@@ -35,6 +37,7 @@ const Login = () => {
   };
 
   const handleLoginClick = async () => {
+    setLoading(true);
     logout();
 
     try {
@@ -48,6 +51,7 @@ const Login = () => {
 
       navigate("/home");
     } catch (error: any) {
+      setLoading(false);
       if (
         error.response &&
         error.response.data &&
@@ -73,6 +77,7 @@ const Login = () => {
         });
       }
     }
+    
   };
 
   return (
@@ -101,6 +106,7 @@ const Login = () => {
           />
           <div>
             <Button color="#3c3c3b" text="ENTRAR" onClick={handleLoginClick} />
+            {loading && <Loading />}
             <span>
               Esqueceu sua senha ? <a href="/resetePassword">Clique aqui</a>
             </span>
