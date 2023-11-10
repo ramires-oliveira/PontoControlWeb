@@ -15,7 +15,7 @@ import {
   ContentHeader,
 } from "../Profile/styles";
 import Loading from "../../components/Loading";
-import cryptoRandomString from "crypto-random-string";
+import { mask } from "../../services/cpfMask";
 
 const initialFormData = {
   firstName: "",
@@ -30,16 +30,19 @@ const initialFormData = {
 const NewEmployee = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState(initialFormData);
+  const [document, setDocument] = useState<string>("");
   const token = getAuthToken();
 
   const resetForm = () => {
     setFormData(initialFormData);
+    setDocument("");
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
+      document: document,
       [id]: value,
     }));
   };
@@ -48,7 +51,7 @@ const NewEmployee = () => {
     setLoading(true);
     const updatedFormData = {
       ...formData,
-      password: cryptoRandomString({ length: 6, type: 'alphanumeric' })
+      password: "123456",
     };
 
     await axios
@@ -59,7 +62,7 @@ const NewEmployee = () => {
       })
       .then(() => {
         resetForm();
-
+        console.log(updatedFormData);
         Swal.fire({
           title: "Cadastrado Realizado !",
           icon: "success",
@@ -98,6 +101,13 @@ const NewEmployee = () => {
       });
   };
 
+  function handleChangeMask(event : React.ChangeEvent<HTMLInputElement>) {
+    const { value } = event.target
+
+    setDocument(mask(value))
+    console.log(document)
+  }
+
   return (
     <>
       <NavBar />
@@ -127,8 +137,8 @@ const NewEmployee = () => {
                 id="document"
                 label="Documento"
                 variant="outlined"
-                value={formData.document}
-                onChange={handleChange}
+                value={document}
+                onChange={handleChangeMask}
               />
               <TextField
                 id="email"
