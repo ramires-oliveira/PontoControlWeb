@@ -68,6 +68,12 @@ const Perfil = () => {
           cancelButtonColor: "#29abe3",
           confirmButtonColor: "#29abe3",
         });
+
+        setUserData({
+          ...user,
+          isFirstLogin: true,
+        });
+        
         setLoading(false);
       })
       .catch((error) => {
@@ -175,3 +181,7 @@ const Perfil = () => {
 };
 
 export default Perfil;
+function setUserData(arg0: { isFirstLogin: boolean; document?: string | undefined; email?: string | undefined; name?: string | undefined; position?: string | undefined; token?: string | undefined; typeUser?: number | undefined; }) {
+  throw new Error("Function not implemented.");
+}
+

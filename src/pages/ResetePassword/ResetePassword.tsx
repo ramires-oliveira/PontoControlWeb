@@ -8,6 +8,7 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import Loading from "../../components/Loading";
+import { useSidebar } from "../../reactContext/SidebarContext";
 
 interface ResetePasswordData {
   email: string;
@@ -16,6 +17,7 @@ interface ResetePasswordData {
 }
 
 const ResetePassword = () => {
+  const { user } = useSidebar();
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState<ResetePasswordData>({
@@ -49,6 +51,10 @@ const ResetePassword = () => {
           confirmButtonColor: "#29abe3",
         });
         setLoading(false);
+        setUserData({
+          ...user,
+          isFirstLogin: true,
+        });
         navigate("/login");
       })
       .catch((error) => {
@@ -130,3 +136,7 @@ const ResetePassword = () => {
 };
 
 export default ResetePassword;
+function setUserData(arg0: { isFirstLogin: boolean; document?: string | undefined; email?: string | undefined; name?: string | undefined; position?: string | undefined; token?: string | undefined; typeUser?: number | undefined; }) {
+  throw new Error("Function not implemented.");
+}
+
