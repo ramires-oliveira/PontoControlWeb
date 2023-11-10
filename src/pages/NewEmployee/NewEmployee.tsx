@@ -15,6 +15,7 @@ import {
   ContentHeader,
 } from "../Profile/styles";
 import Loading from "../../components/Loading";
+import cryptoRandomString from "crypto-random-string";
 
 const initialFormData = {
   firstName: "",
@@ -47,7 +48,7 @@ const NewEmployee = () => {
     setLoading(true);
     const updatedFormData = {
       ...formData,
-      password: "123456",
+      password: cryptoRandomString({ length: 6, type: 'alphanumeric' })
     };
 
     await axios
