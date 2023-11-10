@@ -15,7 +15,7 @@ import NewEmployee from "./pages/NewEmployee/NewEmployee";
 import { SidebarProvider } from "./reactContext/SidebarContext";
 import DotMirror from "./pages/DotMirror/DotMirror";
 import ResetePassword from "./pages/ResetePassword/ResetePassword";
-import { isAuthenticated } from "./auth/authService";
+import { isTokenExpired, logout } from "./auth/authService";
 
 const theme = createTheme({
   palette: {
@@ -26,6 +26,14 @@ const theme = createTheme({
 });
 
 function App() {
+  const isAuthenticated = isTokenExpired();
+
+  useEffect(() => {
+    if (isAuthenticated === null) {
+      logout();
+    }
+  }, [isAuthenticated]);
+
   return (
     <ThemeProvider theme={theme}>
       <SidebarProvider>
@@ -36,30 +44,44 @@ function App() {
             <Route path="/resetePassword" element={<ResetePassword />} />
             <Route
               path="/home"
-              element={isAuthenticated() ? <Home /> : <Navigate to="/login" />}
+              element={
+                isAuthenticated !== null ? <Home /> : <Navigate to="/login" />
+              }
             />
             <Route
               path="/profile"
               element={
-                isAuthenticated() ? <Perfil /> : <Navigate to="/login" />
+                isAuthenticated !== null ? <Perfil /> : <Navigate to="/login" />
               }
             />
             <Route
               path="/markTime"
               element={
-                isAuthenticated() ? <MarkTime /> : <Navigate to="/login" />
+                isAuthenticated !== null ? (
+                  <MarkTime />
+                ) : (
+                  <Navigate to="/login" />
+                )
               }
             />
             <Route
               path="/dotMirror"
               element={
-                isAuthenticated() ? <DotMirror /> : <Navigate to="/login" />
+                isAuthenticated !== null ? (
+                  <DotMirror />
+                ) : (
+                  <Navigate to="/login" />
+                )
               }
             />
             <Route
               path="/newEmployee"
               element={
-                isAuthenticated() ? <NewEmployee /> : <Navigate to="/login" />
+                isAuthenticated !== null ? (
+                  <NewEmployee />
+                ) : (
+                  <Navigate to="/login" />
+                )
               }
             />
           </Routes>

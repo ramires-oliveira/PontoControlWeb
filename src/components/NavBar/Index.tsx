@@ -37,7 +37,7 @@ export function NavBar() {
 
   return (
     <Navbar>
-      <Link to="/home" className="link">
+      <Link to={user?.typeUser === 1 ? "/home" : ""} className="link">
         <img src={Logo1} alt="Logo" id="logo" />
       </Link>
       <FiLogOut className="logout" onClick={handleLogout} />

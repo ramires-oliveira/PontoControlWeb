@@ -5,7 +5,11 @@ import Button from "../../components/Button/Index";
 import { Container, ContentImg, ContentForm, Form } from "./styles";
 import axios from "axios";
 import { useState } from "react";
-import { logout, setAuthToken } from "../../auth/authService";
+import {
+  logout,
+  setAuthToken,
+  setAuthTokenExpiration,
+} from "../../auth/authService";
 import { useNavigate } from "react-router-dom";
 import { useSidebar } from "../../reactContext/SidebarContext";
 import Swal from "sweetalert2";
@@ -45,8 +49,13 @@ const Login = () => {
 
       setUser(response.data);
       setAuthToken(response.data.token);
+      setAuthTokenExpiration();
 
-      navigate("/home");
+      if (response.data.typeUser === 0) {
+        navigate("/profile");
+      } else {
+        navigate("/home");
+      }
     } catch (error: any) {
       if (
         error.response &&
