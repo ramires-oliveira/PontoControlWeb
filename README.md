@@ -38,13 +38,17 @@ Antes de iniciar, certifique-se de ter as seguintes ferramentas instaladas:
    yarn install
    ```
 
-4. Certifique-se de configurar a URL da API através da variável de ambiente `VITE_APP_API_URL` no arquivo `.env` caso esteja rodando a API em uma porta diferente da `7083`:
+4. Baixe o repositório da API no link abaixo e siga as orientações em seu README:
+
+   [Repositório da API](https://github.com/luan952/PontoControlAPI)
+
+5. Certifique-se de configurar a URL da API através da variável de ambiente `VITE_APP_API_URL` no arquivo `.env` caso esteja rodando a API em uma porta diferente da `7083`. Se a porta for diferente, adicione a seguinte linha ao seu arquivo `.env`:
 
    ```bash
-   VITE_APP_API_URL=https://localhost:7083
+   VITE_APP_API_URL=https://localhost:SUA_PORTA_DA_API
    ```
 
-5. Para executar o projeto em modo de desenvolvimento, use o seguinte comando:
+6. Para executar o projeto em modo de desenvolvimento, use o seguinte comando:
 
    ```bash
    npm run dev
