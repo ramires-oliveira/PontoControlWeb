@@ -1,13 +1,13 @@
 # Ponto Control
 
-Este é um projeto em React com TypeScript para gerenciamento do ponto eletrônico de uma empresa. Ele se integra perfeitamente com uma API em C# para automatizar as operações de um sistema de registro de ponto eletrônico, simplificando o controle de horas trabalhadas e presenças.
+Este projeto, desenvolvido em React com TypeScript, tem como objetivo oferecer uma solução abrangente para o gerenciamento do ponto eletrônico em ambientes corporativos. Ao se integrar de maneira harmoniosa com uma API em C#, o sistema automatiza eficientemente as operações de registro de ponto eletrônico, proporcionando uma abordagem simplificada para o controle de horas trabalhadas e presenças.
 
 ## Recursos
 
 - Cadastro de novos colaboradores.
-- Registro de entrada e saída de funcionários com localização atual.
+- Registro de entrada e saída de colaboradores com localização atual.
 - Acompanhamento de horas trabalhadas.
-- Relatório com filtragem por datas.
+- Relatório em excel com filtragem por datas.
 
 ## Pré-requisitos
 
