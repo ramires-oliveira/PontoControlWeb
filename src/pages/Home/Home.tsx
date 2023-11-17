@@ -44,7 +44,7 @@ interface MarkingsOfDayProps {
 }
 
 const Home = () => {
-  const { user } = useSidebar();
+  const { user, setUser } = useSidebar();
   const [open, setOpen] = useState(false);
   const token = getAuthToken();
 
@@ -80,6 +80,18 @@ const Home = () => {
       )
       .then(() => {
         setOpen(false);
+
+        setUser(
+          {
+            name: user?.name,
+            email: user?.email,
+            document: user?.document,
+            position: user?.position,
+            typeUser: user?.typeUser,
+            token: user?.token as string,
+            isFirstLogin: true,
+          }
+        );
 
         Swal.fire({
           title: "Resete Realizado !",
@@ -177,7 +189,7 @@ const Home = () => {
       </Container>
       <Modal open={open}>
         <Box>
-          <h2 style={{ margin: "0", textAlign: "center" }}>Olá, Ramires</h2>
+          <h2 style={{ margin: "0", textAlign: "center" }}>Olá, {user?.name}</h2>
           <span>
             Por motivos de segurança, pedimos que defina uma nova senha para
             continuar.

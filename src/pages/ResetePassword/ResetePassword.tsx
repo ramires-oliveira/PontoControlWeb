@@ -17,7 +17,7 @@ interface ResetePasswordData {
 }
 
 const ResetePassword = () => {
-  const { user } = useSidebar();
+  const { user, setUser } = useSidebar();
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState<ResetePasswordData>({
@@ -51,10 +51,17 @@ const ResetePassword = () => {
           confirmButtonColor: "#29abe3",
         });
         setLoading(false);
-        setUserData({
-          ...user,
-          isFirstLogin: true,
-        });
+        setUser(
+          {
+            name: user?.name,
+            email: user?.email,
+            document: user?.document,
+            position: user?.position,
+            typeUser: user?.typeUser,
+            token: user?.token as string,
+            isFirstLogin: true,
+          }
+        );
         navigate("/login");
       })
       .catch((error) => {
@@ -136,7 +143,4 @@ const ResetePassword = () => {
 };
 
 export default ResetePassword;
-function setUserData(arg0: { isFirstLogin: boolean; document?: string | undefined; email?: string | undefined; name?: string | undefined; position?: string | undefined; token?: string | undefined; typeUser?: number | undefined; }) {
-  throw new Error("Function not implemented.");
-}
 
