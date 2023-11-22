@@ -40,8 +40,6 @@ import { AiOutlineClear } from "react-icons/ai";
 import Swal from "sweetalert2";
 import Loading from "../../components/Loading";
 
-const locale = ptBR.components.MuiLocalizationProvider.defaultProps.localeText;
-
 interface DowloadExcelMarking {
   listMarkings: MarkingsOfDay[];
 }
@@ -61,7 +59,6 @@ interface MarkingsOfDay {
   marking?: MarkingResponse[];
   totalHoursByDay: string | null;
 }
-
 
 const DotMirror = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -125,7 +122,7 @@ const DotMirror = () => {
       if (startDate === null || endDate === null) {
         Swal.fire({
           title: "Atenção !",
-          html: "As datas precisam ser preenchidas.",
+          html: "Ambas as datas precisam ser preenchidas.",
           icon: "warning",
           allowOutsideClick: false,
           cancelButtonColor: "#29abe3",
@@ -214,11 +211,13 @@ const DotMirror = () => {
     const excel: DowloadExcelMarking = {
       listMarkings: [],
     };
-    await returnReportDowload().then((response) => {
-      excel.listMarkings = response;
-    }).catch(() => {
-      setLoading(false);
-    });
+    await returnReportDowload()
+      .then((response) => {
+        excel.listMarkings = response;
+      })
+      .catch(() => {
+        setLoading(false);
+      });
 
     await axios
       .put(
@@ -346,7 +345,7 @@ const DotMirror = () => {
                       <TableCell>1° Entrada</TableCell>
                       <TableCell>1° Saída</TableCell>
                       <TableCell>2° Entrada</TableCell>
-                      <TableCell>2° Entrada</TableCell>
+                      <TableCell>2° Saída</TableCell>
                       <TableCell>Quant. Horas</TableCell>
                     </TableRow>
                   </TableHead>
@@ -359,8 +358,8 @@ const DotMirror = () => {
                         const cellClass = isHoliday
                           ? "holiday-cell"
                           : isSaturdayDay || isSundayDay
-                            ? "dayOff-cell"
-                            : "";
+                          ? "dayOff-cell"
+                          : "";
 
                         let daysData: MarkingsOfDay | undefined;
 
@@ -380,8 +379,8 @@ const DotMirror = () => {
                         const markingCells =
                           numMarkings < 4
                             ? Array.from({ length: 4 - numMarkings }).fill(
-                              "00:00"
-                            )
+                                "00:00"
+                              )
                             : [];
 
                         return (
@@ -391,10 +390,30 @@ const DotMirror = () => {
                             </TableCell>
                             {daysData && daysData.marking
                               ? (numMarkings < 4
-                                ? [...daysData.marking, ...markingCells]
-                                : daysData.marking
-                              ).map((marking: any, markingIndex: any) => (
-                                <>
+                                  ? [...daysData.marking, ...markingCells]
+                                  : daysData.marking
+                                ).map((marking: any, markingIndex: any) => (
+                                  <>
+                                    <TableCell
+                                      key={markingIndex}
+                                      className={cellClass}
+                                    >
+                                      {cellClass === "holiday-cell"
+                                        ? "Feriado"
+                                        : cellClass === "dayOff-cell"
+                                        ? "Folga"
+                                        : marking && marking.hour
+                                        ? new Date(
+                                            marking.hour
+                                          ).toLocaleTimeString([], {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                          })
+                                        : "00:00"}
+                                    </TableCell>
+                                  </>
+                                ))
+                              : [...Array(4)].map((_, markingIndex) => (
                                   <TableCell
                                     key={markingIndex}
                                     className={cellClass}
@@ -402,34 +421,15 @@ const DotMirror = () => {
                                     {cellClass === "holiday-cell"
                                       ? "Feriado"
                                       : cellClass === "dayOff-cell"
-                                        ? "Folga"
-                                        : marking && marking.hour
-                                          ? new Date(
-                                            marking.hour
-                                          ).toLocaleTimeString([], {
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                          })
-                                          : "00:00"}
-                                  </TableCell>
-                                </>
-                              ))
-                              : [...Array(4)].map((_, markingIndex) => (
-                                <TableCell
-                                  key={markingIndex}
-                                  className={cellClass}
-                                >
-                                  {cellClass === "holiday-cell"
-                                    ? "Feriado"
-                                    : cellClass === "dayOff-cell"
                                       ? "Folga"
                                       : "00:00"}
-                                </TableCell>
-                              ))}
+                                  </TableCell>
+                                ))}
                             <TableCell>
                               {daysData?.totalHoursByDay
-                                ? `${daysData?.totalHoursByDay.split(":")[0]}:${daysData?.totalHoursByDay.split(":")[1]
-                                }`
+                                ? `${daysData?.totalHoursByDay.split(":")[0]}:${
+                                    daysData?.totalHoursByDay.split(":")[1]
+                                  }`
                                 : "00:00"}
                             </TableCell>
                           </TableRow>
