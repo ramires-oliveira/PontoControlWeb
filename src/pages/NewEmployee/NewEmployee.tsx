@@ -62,9 +62,8 @@ const NewEmployee = () => {
       })
       .then(() => {
         resetForm();
-        console.log(updatedFormData);
         Swal.fire({
-          title: "Cadastrado Realizado !",
+          title: "Cadastro Realizado !",
           icon: "success",
           allowOutsideClick: false,
           cancelButtonColor: "#29abe3",
@@ -101,11 +100,10 @@ const NewEmployee = () => {
       });
   };
 
-  function handleChangeMask(event : React.ChangeEvent<HTMLInputElement>) {
-    const { value } = event.target
+  function handleChangeMask(event: React.ChangeEvent<HTMLInputElement>) {
+    const { value } = event.target;
 
-    setDocument(mask(value))
-    console.log(document)
+    setDocument(mask(value));
   }
 
   return (
